@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e131b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Entraînement">
+  <title>Entraînement SMC</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="home" class="screen">
+    <header class="home-head">
+      <p class="eyebrow">BTC/USDC · 5 min · vraies bougies</p>
+      <h1>Entraînement SMC</h1>
+      <p class="lead">Repère la liquidité, le BOS, l'order block, le FVG et la zone Fibonacci à l'œil nu, puis décide&nbsp;: achat ou vente.</p>
+    </header>
+
+    <section class="stats" aria-label="Tes statistiques">
+      <div class="stat stat-hero">
+        <span class="stat-label">Série en cours</span>
+        <span class="stat-value" id="s-streak">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Meilleure série</span>
+        <span class="stat-value" id="s-best">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Réussite</span>
+        <span class="stat-value" id="s-rate">–</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Total</span>
+        <span class="stat-value" id="s-r">0 R</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Joués</span>
+        <span class="stat-value" id="s-played">0</span>
+      </div>
+      <div class="stat stat-wide">
+        <span class="stat-label">D'accord avec la stratégie</span>
+        <span class="stat-value" id="s-agree">–</span>
+      </div>
+    </section>
+
+    <button class="btn btn-primary btn-big" id="play">Jouer</button>
+
+    <section class="history" aria-label="Dernières parties">
+      <h2>Dernières parties</h2>
+      <ol id="history-list" class="history-list"></ol>
+      <p id="history-empty" class="muted">Aucune partie pour l'instant. Tes 20 dernières décisions s'afficheront ici.</p>
+    </section>
+
+    <details class="howto">
+      <summary>Comment ça marche</summary>
+      <ol>
+        <li>Le graphique s'arrête au moment où le prix revient dans une zone. Les bougies suivantes sont cachées.</li>
+        <li>Regarde la tendance avec le bouton <b>1 h</b>, puis cherche sur le <b>5 min</b> la prise de liquidité, la cassure (BOS), l'order block, le FVG et la zone Fibonacci 0,618–0,705.</li>
+        <li>Choisis <b>Achat</b> ou <b>Vente</b>. Tu entres au prix de clôture de la dernière bougie.</li>
+        <li>Le stop est placé à la distance que donne la stratégie (sous ou au-dessus de l'order block, avec une marge de 0,3 × ATR), le TP à 2 fois cette distance (RR 1:2).</li>
+        <li>Les bougies suivantes défilent : tu gagnes +2R si le TP est touché en premier, tu perds −1R si c'est le stop.</li>
+        <li>Ensuite, l'analyse de la stratégie s'affiche sur le graphique pour que tu compares avec ce que tu avais vu.</li>
+      </ol>
+      <p class="muted"><span id="scenario-count">530</span> situations réelles, de novembre 2024 à octobre 2026, détectées automatiquement avec les règles de ta stratégie. Gagner ici ne garantit rien en réel.</p>
+    </details>
+
+    <button class="btn btn-ghost" id="reset">Remettre les statistiques à zéro</button>
+    <div id="reset-confirm" class="confirm" hidden>
+      <p>Effacer toutes tes statistiques et ton historique ?</p>
+      <div class="row">
+        <button class="btn btn-danger" id="reset-yes">Effacer</button>
+        <button class="btn btn-ghost" id="reset-no">Annuler</button>
+      </div>
+    </div>
+  </main>
+
+  <main id="game" class="screen" hidden>
+    <header class="game-head">
+      <button class="icon-btn" id="back" aria-label="Retour à l'accueil">‹</button>
+      <div class="game-meta">
+        <span id="g-number">Situation #1</span>
+        <span id="g-price" class="mono"></span>
+      </div>
+      <div class="streak-chip" aria-label="Série en cours"><span id="g-streak">0</span> d'affilée</div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Unité de temps">
+      <button role="tab" class="tab" id="tab-5m" aria-selected="true">5 min</button>
+      <button role="tab" class="tab" id="tab-1h" aria-selected="false">1 h</button>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chart" aria-label="Graphique en bougies"></canvas>
+      <div id="chart-hint" class="chart-hint">Tendance de fond : regarde le 1 h</div>
+    </div>
+
+    <section id="decide" class="decide">
+      <div class="row">
+        <button class="btn btn-buy" id="buy">Achat</button>
+        <button class="btn btn-sell" id="sell">Vente</button>
+      </div>
+      <button class="btn btn-link" id="skip">Passer cette situation</button>
+    </section>
+
+    <section id="playing" class="playing" hidden>
+      <p class="mono" id="play-status">Les bougies défilent…</p>
+      <button class="btn btn-ghost" id="fast">Voir le résultat tout de suite</button>
+    </section>
+
+    <section id="result" class="result" hidden>
+      <div class="result-head">
+        <span id="r-badge" class="badge"></span>
+        <span id="r-r" class="result-r mono"></span>
+      </div>
+      <p id="r-detail" class="result-detail"></p>
+      <p id="r-strategy" class="result-strategy"></p>
+      <ul class="legend" id="legend">
+        <li><i class="k k-liq"></i>Liquidité</li>
+        <li><i class="k k-bos"></i>BOS</li>
+        <li><i class="k k-ob"></i>Order block</li>
+        <li><i class="k k-fvg"></i>FVG</li>
+        <li><i class="k k-fib"></i>Fib 0,618–0,705</li>
+      </ul>
+      <label class="switch"><input type="checkbox" id="show-analysis" checked> Afficher l'analyse</label>
+      <button class="btn btn-primary" id="next">Situation suivante</button>
+    </section>
+  </main>
+
+  <script src="scenarios.js"></script>
+  <script src="chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
