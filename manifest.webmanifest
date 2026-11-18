@@ -1,7 +1,7 @@
 {
   "name": "Entraînement SMC",
   "short_name": "Entraînement",
-  "description": "Entraîne-toi à repérer liquidité, BOS, order block, FVG et Fibonacci sur de vraies bougies BTC/USDC.",
+  "description": "Entraîne-toi à repérer liquidité, BOS, order block, FVG et Fibonacci sur de vraies bougies XAUUSD, EURUSD et GBPUSD.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

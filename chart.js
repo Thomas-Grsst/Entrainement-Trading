@@ -17,12 +17,13 @@
     entry: "#ffffff",
     decision: "rgba(240, 180, 41, 0.55)",
   };
-  const PRICE_AXIS = 62;
+  const PRICE_AXIS = 66;
   const TIME_AXIS = 20;
   const TOP_PAD = 26;
 
-  function formatPrice(value) {
-    return Math.round(value).toLocaleString("fr-FR").replace(/ | /g, " ");
+  function formatPrice(value, decimals = 0) {
+    return value.toLocaleString("fr-FR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+      .replace(/\u202f|\u00a0/g, " ");
   }
 
   function niceStep(range, targetTicks) {
@@ -100,7 +101,7 @@
       ctx.stroke();
       ctx.fillStyle = COLORS.axis;
       ctx.textAlign = "left";
-      ctx.fillText(formatPrice(p), plotW + 6, y(p));
+      ctx.fillText(formatPrice(p, view.decimals), plotW + 6, y(p));
     }
 
     if (view.timeLabel) {
@@ -219,7 +220,7 @@
     ctx.font = "700 10px ui-monospace, Menlo, monospace";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText(formatPrice(last[3]), plotW + 5, ly);
+    ctx.fillText(formatPrice(last[3], view.decimals), plotW + 5, ly);
   }
 
   window.CandleChart = { draw, formatPrice };

@@ -1,14 +1,16 @@
 # Entraînement SMC
 
-Application mobile pour s'entraîner à repérer à l'œil nu une stratégie Smart Money Concepts sur de **vraies bougies BTC/USDC en 5 minutes** : prise de liquidité, cassure de structure (BOS), order block, FVG et zone Fibonacci 0,618–0,705.
+Application mobile pour s'entraîner à repérer à l'œil nu une stratégie Smart Money Concepts sur de **vraies bougies 15 minutes de l'or et du forex** : XAUUSD, EURUSD et GBPUSD.
 
-L'application montre un graphique arrêté au moment où le prix revient dans une zone. Tu choisis **Achat** ou **Vente**, puis les bougies suivantes défilent :
+Le graphique s'arrête sur une **bougie de retournement**, juste après un retour du prix dans une zone (order block, FVG, Fibonacci). C'est le moment où tu entrerais en réel. Tu peux regarder la tendance de fond en **1 h** et en **4 h**, puis tu choisis **Achat** ou **Vente**. Les bougies suivantes défilent :
 - +2R si le take-profit est touché en premier ;
 - −1R si c'est le stop.
 
-L'analyse de la stratégie s'affiche ensuite sur le graphique. Tes statistiques (série en cours, meilleure série, taux de réussite, total en R) restent enregistrées sur ton téléphone.
+L'analyse de la stratégie s'affiche ensuite sur le graphique.
 
-- **530 situations réelles**, de novembre 2024 à octobre 2026 (270 achats, 260 ventes).
+Tes statistiques restent enregistrées sur ton téléphone : série en cours, meilleure série, taux de réussite, total en R, résultats par marché.
+
+- **385 situations réelles**, de février 2024 à octobre 2026 : 155 sur l'or, 113 sur EURUSD, 117 sur GBPUSD.
 - Fonctionne **hors ligne** une fois installée.
 - Aucun compte, aucune donnée envoyée.
 
@@ -38,33 +40,37 @@ Puis ouvre http://localhost:8000.
 
 ## Comment sont créées les situations
 
-Les situations sont détectées automatiquement dans l'historique Binance (données publiques gratuites) par `outils/smc.py`, avec ces règles :
+Les bougies 1 minute viennent de HistData.com (données gratuites), regroupées en 15 minutes. Les situations sont détectées automatiquement par `outils/smc.py` :
 
 | Élément | Règle |
 |---|---|
-| Tendance 1 h | Prix au-dessus de l'EMA 200 en 1 h et dernier plus haut 1 h cassé (l'inverse pour la vente) |
+| Tendance 4 h | Prix au-dessus de l'EMA 200 en 4 h et dernier plus haut 4 h cassé (l'inverse pour la vente) |
 | Points de swing | Plus haut ou plus bas des 3 bougies avant et des 3 après |
 | Prise de liquidité | Une mèche passe sous un plus bas récent puis le prix reclôture au-dessus dans les 3 bougies |
 | BOS | Clôture au-dessus du dernier plus haut de swing |
 | Order block | Dernière bougie baissière avant l'impulsion |
 | Impulsion | Au moins une bougie dont le corps fait plus de 1,5 fois la moyenne des 20 précédentes |
 | FVG | Bas de la bougie 3 au-dessus du haut de la bougie 1, qui touche ou chevauche l'order block, jamais retesté |
-| Zone d'entrée | Partie commune du FVG et de la zone Fibonacci 0,618–0,705 |
-| Stop | Sous l'order block, moins 0,3 × ATR(14) |
+| Zone | Partie commune du FVG et de la zone Fibonacci 0,618–0,705 |
+| Entrée | Clôture d'une bougie au-delà du plus haut (achat) ou du plus bas (vente) de la précédente, dans les 6 bougies après le retour dans la zone |
+| Stop | Au-delà de l'order block, avec une marge de 0,3 × ATR(14) |
 | Take-profit | 2 fois la distance du stop |
 
-Pour avoir plus de situations, l'application mélange quatre variantes : avec ou sans prise de liquidité, avec ou sans zone Fibonacci. L'écran de résultat indique laquelle tu viens de voir.
+Pour avoir assez de situations, l'application mélange quatre variantes : avec ou sans prise de liquidité, avec ou sans zone Fibonacci. L'écran de résultat indique laquelle tu viens de voir.
 
 ### Régénérer les situations
 
 Il faut Python 3 avec `pandas` et `numpy`.
 
 ```bash
-python3 outils/telecharger_bougies.py 2024-11 2026-10
-cd outils && python3 generer_scenarios.py
+python3 outils/telecharger_donnees.py
 ```
 
-Après une régénération, change le nom du cache dans `sw.js` (par exemple `entrainement-smc-v2`) pour que les téléphones téléchargent la nouvelle version.
+```bash
+python3 outils/generer_scenarios.py
+```
+
+Après une régénération, change le nom du cache dans `sw.js` (par exemple `entrainement-smc-v3`) pour que les téléphones téléchargent la nouvelle version.
 
 ## Fichiers
 

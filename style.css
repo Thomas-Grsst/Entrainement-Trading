@@ -80,6 +80,12 @@ h2 { font-size: 17px; }
 .dot-loss { background: var(--down); }
 .dot-flat { background: var(--muted); }
 
+.pairs h2 { margin-bottom: 8px; }
+.pair-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.pair-list li { display: flex; justify-content: space-between; gap: 10px; background: var(--panel); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.pair-list strong { font-family: var(--font-display); }
+.pair-list span { color: var(--muted); text-align: right; }
+
 .howto { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
 .howto summary { font: 700 15px var(--font-display); cursor: pointer; }
 .howto ol { padding-left: 20px; margin: 10px 0; display: flex; flex-direction: column; gap: 6px; }

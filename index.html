@@ -19,7 +19,7 @@
 <body>
   <main id="home" class="screen">
     <header class="home-head">
-      <p class="eyebrow">BTC/USDC · 5 min · vraies bougies</p>
+      <p class="eyebrow">XAUUSD · EURUSD · GBPUSD · 15 min · vraies bougies</p>
       <h1>Entraînement SMC</h1>
       <p class="lead">Repère la liquidité, le BOS, l'order block, le FVG et la zone Fibonacci à l'œil nu, puis décide&nbsp;: achat ou vente.</p>
     </header>
@@ -53,6 +53,11 @@
 
     <button class="btn btn-primary btn-big" id="play">Jouer</button>
 
+    <section class="pairs" aria-label="Résultats par marché">
+      <h2>Par marché</h2>
+      <ul id="pair-stats" class="pair-list"></ul>
+    </section>
+
     <section class="history" aria-label="Dernières parties">
       <h2>Dernières parties</h2>
       <ol id="history-list" class="history-list"></ol>
@@ -62,14 +67,14 @@
     <details class="howto">
       <summary>Comment ça marche</summary>
       <ol>
-        <li>Le graphique s'arrête au moment où le prix revient dans une zone. Les bougies suivantes sont cachées.</li>
-        <li>Regarde la tendance avec le bouton <b>1 h</b>, puis cherche sur le <b>5 min</b> la prise de liquidité, la cassure (BOS), l'order block, le FVG et la zone Fibonacci 0,618–0,705.</li>
+        <li>Le graphique 15 min s'arrête sur une bougie de retournement, juste après un retour du prix dans une zone. Les bougies suivantes sont cachées.</li>
+        <li>Regarde la tendance de fond avec les boutons <b>4 h</b> et <b>1 h</b>, puis cherche sur le <b>15 min</b> la prise de liquidité, la cassure (BOS), l'order block, le FVG et la zone Fibonacci 0,618–0,705.</li>
         <li>Choisis <b>Achat</b> ou <b>Vente</b>. Tu entres au prix de clôture de la dernière bougie.</li>
-        <li>Le stop est placé à la distance que donne la stratégie (sous ou au-dessus de l'order block, avec une marge de 0,3 × ATR), le TP à 2 fois cette distance (RR 1:2).</li>
-        <li>Les bougies suivantes défilent : tu gagnes +2R si le TP est touché en premier, tu perds −1R si c'est le stop.</li>
+        <li>Le stop est placé à la distance que donne la stratégie (au-delà de l'order block, avec une marge de 0,3 × ATR), le TP à 2 fois cette distance (RR 1:2).</li>
+        <li>Les bougies suivantes défilent : +2R si le TP est touché en premier, −1R si c'est le stop. Sans résultat après 36 h, la position est fermée au dernier prix.</li>
         <li>Ensuite, l'analyse de la stratégie s'affiche sur le graphique pour que tu compares avec ce que tu avais vu.</li>
       </ol>
-      <p class="muted"><span id="scenario-count">530</span> situations réelles, de novembre 2024 à octobre 2026, détectées automatiquement avec les règles de ta stratégie. Gagner ici ne garantit rien en réel.</p>
+      <p class="muted"><span id="scenario-count">385</span> situations réelles sur l'or (XAUUSD), l'euro-dollar (EURUSD) et la livre-dollar (GBPUSD), de février 2024 à octobre 2026, détectées automatiquement avec les règles de ta stratégie. Gagner ici ne garantit rien en réel.</p>
     </details>
 
     <button class="btn btn-ghost" id="reset">Remettre les statistiques à zéro</button>
@@ -93,13 +98,14 @@
     </header>
 
     <div class="tabs" role="tablist" aria-label="Unité de temps">
-      <button role="tab" class="tab" id="tab-5m" aria-selected="true">5 min</button>
+      <button role="tab" class="tab" id="tab-15m" aria-selected="true">15 min</button>
       <button role="tab" class="tab" id="tab-1h" aria-selected="false">1 h</button>
+      <button role="tab" class="tab" id="tab-4h" aria-selected="false">4 h</button>
     </div>
 
     <div class="chart-wrap">
       <canvas id="chart" aria-label="Graphique en bougies"></canvas>
-      <div id="chart-hint" class="chart-hint">Tendance de fond : regarde le 1 h</div>
+      <div id="chart-hint" class="chart-hint"></div>
     </div>
 
     <section id="decide" class="decide">

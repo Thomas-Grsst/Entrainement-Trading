@@ -28,8 +28,8 @@ def load_candles(pattern):
     return df.drop(columns="ts").drop_duplicates("time").set_index("time").sort_index()
 
 
-def hourly_trend(df):
-    h1 = df.resample("1h", label="left", closed="left").agg(
+def hourly_trend(df, rule="1h"):
+    h1 = df.resample(rule, label="left", closed="left").agg(
         {"open": "first", "high": "max", "low": "min", "close": "last"}).dropna()
     ema = h1["close"].ewm(span=200, adjust=False).mean().to_numpy()
     hi, lo, cl = h1["high"].to_numpy(), h1["low"].to_numpy(), h1["close"].to_numpy()
@@ -49,11 +49,11 @@ def hourly_trend(df):
             current, swing_low = -1, None
         state[i] = current
     trend = np.where((state == 1) & (cl > ema), 1, np.where((state == -1) & (cl < ema), -1, 0))
-    available_at = pd.Series(trend, index=h1.index + pd.Timedelta("1h"))
+    available_at = pd.Series(trend, index=h1.index + pd.Timedelta(rule))
     return available_at.reindex(df.index, method="ffill").fillna(0).astype(int).to_numpy()
 
 
-def find_setups(df, require_sweep=True, use_fib=True):
+def find_setups(df, require_sweep=True, use_fib=True, trend_rule="1h"):
     o, h, l, c = (df[k].to_numpy() for k in ("open", "high", "low", "close"))
     n = len(df)
     prev_close = np.roll(c, 1)
@@ -62,7 +62,7 @@ def find_setups(df, require_sweep=True, use_fib=True):
     atr = pd.Series(tr).ewm(alpha=1 / 14, adjust=False).mean().to_numpy()
     body = abs(c - o)
     avg_body = pd.Series(body).rolling(20).mean().shift(1).to_numpy()
-    trend = hourly_trend(df)
+    trend = hourly_trend(df, trend_rule)
 
     swing_highs, swing_lows = [], []
     last_high = last_low = None
